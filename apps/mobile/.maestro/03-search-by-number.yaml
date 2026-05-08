@@ -1,0 +1,26 @@
+# Numeric search: open search overlay → type a song number → tap result
+# → assert the pager jumped to that song. Locks the M5 numeric search
+# behavior end-to-end.
+#
+# Assumes a real book is loaded with at least one song numbered 242.
+# The IALC book has it; the demo book may not — for the demo, switch
+# the query to a number known to be present (e.g. "1").
+
+appId: io.github.vbullinger.songbook
+---
+- launchApp:
+    clearState: false
+# Open the search overlay via the toolbar button.
+- tapOn:
+    text: "Search"
+- inputText: "242"
+# Wait for the result list to populate, then tap the first matching row.
+- assertVisible:
+    text: "242"
+    timeout: 4000
+- tapOn:
+    text: "242"
+# Pager should jump and the song's combined title is visible on the page.
+- assertVisible:
+    text: "242"
+    timeout: 4000

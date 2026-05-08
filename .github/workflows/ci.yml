@@ -1,0 +1,67 @@
+# CI gate for the SongbookXP monorepo. Runs on push to master and on
+# every PR. Fast — under 3 minutes — because everything is JS / vitest.
+# Native build verification is operator-driven via EAS (free plan, the
+# user controls when to spend a build credit), so this CI does not
+# attempt to compile the iOS/Android targets.
+#
+# Jobs:
+#   check    → install + typecheck + tests + build-model bench (warn on regression)
+
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Typecheck + tests + bench
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Set up pnpm
+        # Version comes from `packageManager` in package.json. Specifying
+        # `version:` here too triggers ERR_PNPM_BAD_PM_VERSION in v4+.
+        uses: pnpm/action-setup@v4
+
+      - name: Cache pnpm store
+        uses: actions/cache@v4
+        with:
+          path: ~/.local/share/pnpm/store
+          key: pnpm-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            pnpm-${{ runner.os }}-
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck
+        run: pnpm -r typecheck
+
+      - name: Test
+        run: pnpm -r test
+
+      - name: Bench (synthetic fixture)
+        # Bench failures are surfaced as warnings, not gating, until the
+        # baseline JSON in __bench__/baseline.json lands and the
+        # comparison script is in place. For now we just confirm the
+        # bench harness still runs to completion against the synthetic
+        # fixture — that's enough to catch a regression that breaks the
+        # bench file itself.
+        continue-on-error: true
+        run: pnpm --filter @songbook/book-model bench

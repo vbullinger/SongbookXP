@@ -1,0 +1,21 @@
+# Cold-start the app and assert the demo book's cover page renders.
+# Baseline metric: time from app launch to "Songbook" text being visible.
+#
+# Wall-clock comes from `maestro test --debug-output` or by watching the
+# session timing in `maestro test`'s output.
+#
+# Target: < 1500 ms on the Android 14 perf-target phone.
+
+appId: io.github.vbullinger.songbook
+---
+- launchApp:
+    clearState: false
+- assertVisible:
+    text: ".*"
+    timeout: 4000
+# The bundled demo book's cover always shows the book title. The demo
+# is "Nursery Rhymes" — assert by partial match in case the title text
+# wraps.
+- assertVisible:
+    text: "Nursery"
+    timeout: 4000

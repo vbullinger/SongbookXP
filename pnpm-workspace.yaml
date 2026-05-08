@@ -1,0 +1,10 @@
+packages:
+  - apps/*
+  - packages/*
+
+onlyBuiltDependencies:
+  - esbuild
+
+patchedDependencies:
+  expo-audio: patches/expo-audio.patch
+  react-native-zip-archive: patches/react-native-zip-archive.patch

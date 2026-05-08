@@ -1,0 +1,8 @@
+{
+  "name": "expo-ios-secure-copy",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Copies a file from a (possibly security-scoped or iCloud-placeholder) URL into the app sandbox via NSFileCoordinator. iOS-only.",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts"
+}

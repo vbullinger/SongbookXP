@@ -1,0 +1,24 @@
+diff --git a/ios/MediaController.swift b/ios/MediaController.swift
+index b13872f121a73cb62fd9d6ba9c83ac7f63d3dbd9..c03752688d2cb55483cf57a87e5e7b8cb64a13ff 100644
+--- a/ios/MediaController.swift
++++ b/ios/MediaController.swift
+@@ -22,6 +22,19 @@ class MediaController {
+ 
+     DispatchQueue.main.async {
+       if let player {
++        // Backport from upstream PR #40919 (still open against expo/expo as
++        // of SDK 55). Without this, Now Playing widget never appears on
++        // iOS lock-screen / Control Center even though metadata + remote
++        // commands are wired correctly — the shared AVAudioSession's
++        // category isn't reliably .playback at the moment the active
++        // player is registered.
++        let session = AVAudioSession.sharedInstance()
++        do {
++          try session.setCategory(.playback, mode: .default, options: [])
++        } catch {
++          log.warn("Failed to configure audio session for lockscreen controls: \(error.localizedDescription)")
++        }
++
+         self.enableRemoteCommands(options: options)
+         self.updateNowPlayingInfo(for: player)
+       } else {

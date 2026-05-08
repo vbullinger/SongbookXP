@@ -1,0 +1,27 @@
+# Import the IALC 261 MB with_tunes.songbook archive and assert that
+# the imported book replaces the demo. Captures import wall time —
+# target < 8000 ms on the Android 14 perf-target phone.
+#
+# PREREQS:
+# - The .songbook archive is on the device, accessible via Files.app.
+#   Easiest path: AirDrop / email / `adb push` to /sdcard/Download/.
+# - The Files-app integration filter routes a tap to "Open with Songbook"
+#   (we shipped this in app.config.ts intent filters).
+#
+# This flow is more device-state-dependent than the others; the exact
+# steps to navigate Files-app vary by Android skin (Pixel / Samsung /
+# OneUI). The portable contract is "open the file → Songbook receives
+# the URI → first song page renders". Adjust the navigation between
+# launchApp and the assertVisible to match the device's file browser.
+
+appId: io.github.vbullinger.songbook
+---
+- launchApp:
+    clearState: false
+# Operator note: at this point manually invoke the Open With flow on
+# the target file (or expand this YAML once a Files-app navigation
+# pattern is locked for your specific device). Maestro will pause on
+# the next assertVisible until the import completes.
+- assertVisible:
+    text: "First Audio Sample|Songs of Believers|Hymns of Believers"
+    timeout: 30000

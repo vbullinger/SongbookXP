@@ -1,0 +1,20 @@
+# Stress test: swipe left 50 times. Assert the page counter advances and
+# the app doesn't crash. This is primarily a jank/crash probe — pair
+# manually with Android Studio Profiler to read CPU and memory.
+
+appId: io.github.vbullinger.songbook
+---
+- launchApp:
+    clearState: false
+- repeat:
+    times: 50
+    commands:
+      - swipe:
+          direction: LEFT
+# After 50 swipes we should be 50 pages further into the book. We don't
+# assert the exact page number (depends on which book is loaded and
+# whether some swipes were absorbed mid-animation); we assert the app
+# is still alive and responsive by checking the Search button.
+- assertVisible:
+    text: "Search"
+    timeout: 4000

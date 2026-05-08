@@ -1,0 +1,13 @@
+{
+  "bookTitle" : "minimalWithSong",
+  "version" : 1,
+  "sections" : [
+    {
+      "songs" : [
+        {
+          "verses" : []
+        }
+      ]
+    }
+  ]
+}

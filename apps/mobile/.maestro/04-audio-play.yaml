@@ -1,0 +1,38 @@
+# Play audio, background the app for 5 s, foreground, assert audio
+# is still going via the NowPlayingBar reflecting playback state.
+# Verifies the M7 background-audio survival contract on whichever
+# Android version is under test.
+
+appId: io.github.vbullinger.songbook
+---
+- launchApp:
+    clearState: false
+# Operator note: navigate to a song with audio first. The withTunes test
+# fixture has "First Audio Sample" at index 0 of section 0.
+- assertVisible:
+    text: "First Audio Sample"
+    timeout: 6000
+# NowPlayingBar's play button shows ▶ when paused. Tap it.
+- tapOn:
+    text: "▶"
+# After tap, the toggle flips to pause (❚❚).
+- assertVisible:
+    text: "❚❚"
+    timeout: 4000
+# Background the app for 5 seconds. (Maestro uses pressKey: Home for
+# Android, which sends the device home — the app stays in background.)
+- pressKey: Home
+- waitForAnimationToEnd
+- runScript:
+    when:
+      platform: android
+    file: |
+      // Sleep 5s without going through Maestro's flaky sleep helper.
+      Java.type('java.lang.Thread').sleep(5000);
+- launchApp:
+    clearState: false
+# When we come back, the pause icon should still be visible (audio
+# kept playing) — the NowPlayingBar reflects the actual player state.
+- assertVisible:
+    text: "❚❚"
+    timeout: 4000

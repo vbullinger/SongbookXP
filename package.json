@@ -1,0 +1,15 @@
+{
+  "name": "songbook-xp",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Cross-platform React Native port of the Red Songbook iOS app. See Plan.html.",
+  "scripts": {
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm --filter \"./packages/*\" test",
+    "lint": "pnpm -r lint --if-present"
+  },
+  "packageManager": "pnpm@10.25.0",
+  "engines": {
+    "node": ">=20"
+  }
+}
